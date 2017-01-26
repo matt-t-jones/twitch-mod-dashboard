@@ -4,14 +4,42 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js" type="text/javascript"></script>
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-		<link href="app.css" rel="stylesheet" type="text/css"
+		<link href="app.css" rel="stylesheet" type="text/css" />
 	</head>
 	
 	<body>
-		<input type="text" id="userInput" placeholder="twitch username" autofocus />
-		<input type="button" onclick="buttonAction()" value="go" />
-		<div id="onlineChannels"></div>
-		<div id="offlineChannels"></div>
+		<div style="text-align: center;">
+			<input type="text" id="userInput" placeholder="username" autofocus />
+			<input id="goButton" type="button" onclick="buttonAction()" value="go" />
+		</div>
+		<table>
+			<thead></thead>
+			<tfoot></tfoot>
+			<h3 id="onlineIndex"></h3>
+			<tbody class="headerBody">
+				<tr>
+					<th>Channel</th>
+					<th>Link</th>
+				</tr>
+			</tbody>
+			<tbody id="onlineTable">
+
+			</tbody>
+		</table>
+		<table>
+			<thead></thead>
+			<tfoot></tfoot>
+			<h3 id="offlineIndex"></h3>
+			<tbody class="headerBody">
+				<tr>
+					<th>Channel</th>
+					<th>Link</th>
+				</tr>
+			</tbody>
+			<tbody id="offlineTable">
+				
+			</tbody>
+		</table>
 	
 		<script src="app.js?4" type="text/javascript"></script>
 	</body>
