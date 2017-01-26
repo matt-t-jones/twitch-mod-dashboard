@@ -1,9 +1,66 @@
 body {
 	margin: 20px;
 }
+table {
+	border-collapse: separate;
+	margin: 15px;
+	width: 600px;
+}
+tbody {
+	border: 1px solid black;
+	border-radius: 5px;
+}
+tbody.headerBody th {
+	border: none !important;
+}
+td:first-of-type {
+	width: 45%;
+}
+tbody#onlineTable {
+	background-color: rgba(0, 255, 0, 0.6);
+}
+tbody tr:first-of-type td:first-of-type {
+	border-radius: 5px 0px 0px 0px;
+}
+tbody tr:first-of-type td:last-of-type {
+	border-radius: 0px 5px 0px 0px;
+}
+tbody#offlineTable {
+	background-color: rgba(255, 0, 0, 0.6);
+	margin-top: 5px;
+}
+tbody tr:last-of-type td:first-of-type {
+	border-radius: 0px 0px 0px 5px;
+}
+tbody tr:last-of-type td:last-of-type {
+	border-radius: 0px 0px 5px 0px;
+}
+table td, table th {
+	padding: 15px;
+	text-align: center;
+	border-left: 1px solid grey;
+	border-top: 1px solid grey;
+	font-size: 14px;
+}
+tr:last-of-type td {
+	border-bottom: 1px solid grey;
+}
+table td:last-of-type, table th:last-of-type {
+	border-right: 1px solid grey;
+}
+
+tr.noChannels td:first-of-type {
+	border-radius: 5px 0px 0px 5px !important;
+}
+tr.noChannels td:last-of-type {
+	border-radius: 0px 5px 5px 0px !important;
+}
+a {
+	color: white;
+}
 .online {
-	color: lightgreen !important;
+	color: black !important;
 }
 .offline {
-	color: red !important;
+	color: black !important;
 }
