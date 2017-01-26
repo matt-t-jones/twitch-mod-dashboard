@@ -4,8 +4,6 @@ var offlineFormatted = [];
 function buttonAction() {
 	username = document.getElementById("userInput").value;
 	fetchMods(username);
-	onlineFormatted = [];
-	offlineFormatted = [];	
 }
 
 function fetchMods(user) {
@@ -25,6 +23,8 @@ function fetchMods(user) {
 				//document.getElementById("channels").innerHTML = document.getElementById("channels").innerHTML + modList[index] + "<br />";
 				document.getElementById("onlineChannels").innerHTML = "";
 				document.getElementById("offlineChannels").innerHTML = "";
+				onlineFormatted = [];
+				offlineFormatted = [];	
 				getTwitchData(modList[index]);
 			}
 			
