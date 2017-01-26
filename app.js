@@ -1,7 +1,11 @@
 var username;
+var onlineFormatted = [];
+var offlineFormatted = [];
 function buttonAction() {
 	username = document.getElementById("userInput").value;
 	fetchMods(username);
+	onlineFormatted = [];
+	offlineFormatted = [];	
 }
 
 function fetchMods(user) {
@@ -27,8 +31,6 @@ function fetchMods(user) {
 		},
 		});
 }
-var onlineFormatted = [];
-var offlineFormatted = [];
 function getTwitchData(tUser) {
 	$.ajax({
 	 type: 'GET',
