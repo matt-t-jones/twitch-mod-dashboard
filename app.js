@@ -27,7 +27,8 @@ function fetchMods(user) {
 		},
 		});
 }
-
+var onlineFormatted = [];
+var offlineFormatted = [];
 function getTwitchData(tUser) {
 	$.ajax({
 	 type: 'GET',
@@ -40,12 +41,16 @@ function getTwitchData(tUser) {
 		var channelAPI = data._links.channel;
 		
 		if (data.stream) {
-			document.getElementById("onlineChannels").innerHTML = document.getElementById("onlineChannels").innerHTML + "<span class='online'>" + tUser + "</span><br />";
+			onlineFormatted.push("<span class='online'>" + tUser + "</span><br />");
+			onlineFormatted.sort();
+			document.getElementById("onlineChannels").innerHTML = onlineFormatted.join("");
 		}
 		
 		
 		else {
-			document.getElementById("offlineChannels").innerHTML = document.getElementById("offlineChannels").innerHTML + "<span class='offline'>" + tUser + "</span><br />";
+			offlineFormatted.push("<span class='offline'>" + tUser + "</span><br />");
+			offlineFormatted.sort();
+			document.getElementById("offlineChannels").innerHTML = offlineFormatted.join("");
 			/*
 			$.ajax({
 			 type: 'GET',
