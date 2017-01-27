@@ -13,6 +13,11 @@ table {
 	margin-left: auto;
 	margin-right: auto;
 }
+@media (max-width: 1520px) {
+	table {
+		width: 95%;
+	}
+}
 td {
 	font-size: 0.9em !important;
 }
