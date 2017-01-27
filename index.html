@@ -11,13 +11,15 @@
 		<div style="text-align: center;">
 			<h2 style="margin: 10px;">Mod Dashboard</h2>
 			<input type="text" id="userInput" class="form-control" placeholder="Twitch Username" autofocus />
+			<input id="goButton" type="button" class="btn btn-success form-control" onclick="buttonAction()" value="Submit" />
+			<br />
+			<br />
 			<span>Limit:</span>
 			<select id="maxChannels" class="form-control" onchange="newLimit()">
 				<option value="100">100</option>
 				<option value="250">250</option>
 				<option value="500">500</option>
 			</select>
-			<input id="goButton" type="button" class="btn btn-success form-control" onclick="buttonAction()" value="Submit" />
 		</div>
 		
 		<script type="text/javascript">
