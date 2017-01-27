@@ -8,9 +8,16 @@
 	</head>
 	
 	<body>
+	<p id="printedArray"></p>
 		<div style="text-align: center;">
+			<h1 id="thisIs"></h1>
 			<input type="text" id="userInput" placeholder="username" autofocus />
 			<input id="goButton" type="button" onclick="buttonAction()" value="go" />
+			<select id="maxChannels">
+				<option value="100">100</option>
+				<option value="250">250</option>
+				<option value="500">500</option>
+			</select>
 		</div>
 		<table>
 			<thead></thead>
@@ -19,7 +26,8 @@
 			<tbody class="headerBody">
 				<tr>
 					<th>Channel</th>
-					<th>Link</th>
+					<th>Info</th>
+					<th>Stats</th>
 				</tr>
 			</tbody>
 			<tbody id="onlineTable">
@@ -33,7 +41,8 @@
 			<tbody class="headerBody">
 				<tr>
 					<th>Channel</th>
-					<th>Link</th>
+					<th>Info</th>
+					<th>Stats</th>
 				</tr>
 			</tbody>
 			<tbody id="offlineTable">

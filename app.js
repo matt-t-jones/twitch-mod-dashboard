@@ -1,4 +1,5 @@
 window.onload = function() {
+	
 	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
 		var urlUser = getAllUrlParams().u;
 		document.getElementById("userInput").value = urlUser;
@@ -8,6 +9,8 @@ window.onload = function() {
 			document.getElementById("goButton").disabled = false;
 		}, 1000);
 	}
+	
+	document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
 	
 }
 
@@ -23,13 +26,13 @@ function buttonAction() {
 
 function fetchMods(user) {
 	$.ajax({
-		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=200",
+		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user,
 		success: function (data) {
 			console.log(data);
 			
 			if (data.count == 0) {
-				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td></tr>";
-				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td></tr>";
+				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
+				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
 			}
 			
 			var modList = [];
@@ -44,7 +47,7 @@ function fetchMods(user) {
 				document.getElementById("offlineTable").innerHTML = "";
 				onlineFormatted = [];
 				offlineFormatted = [];	
-				getTwitchData(modList[index], index);
+				getTwitchData(modList[index], index);				
 			}
 			
 		},
@@ -58,40 +61,95 @@ function getTwitchData(tUser, i) {
 	   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 	 },
 	 success: function(data) {
+		
 		console.log(data);
 		var channelAPI = data._links.channel;
 		
-		if (data.stream) {
+		if (data.stream != null) {
 			onlineIndex++;
-			onlineFormatted.push("<tr><td class='online'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
-			onlineFormatted.sort();
-			document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
+			var viewersCount = data.stream.viewers;
+			//onlineFormatted.push("<tr><td class='online'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
+			//onlineFormatted.sort();
+			//document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
+			
+			
+			$.ajax({
+			 type: 'GET',
+			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
+			 headers: {
+			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
+			 },
+			 success: function(data) {
+				if (data.status.length > 50) {
+					var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+				}
+				else {
+					var truncatedTitle = data.status;
+				}
+				
+				 
+				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'>" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td>" + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " viewers<br />" + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " followers<br />" + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " views</td></tr>");
+				onlineFormatted.sort(function (a, b) {
+				return a.toLowerCase().localeCompare(b.toLowerCase());
+			});
+				document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
+			 }
+			});
+			
+			
 		}
 		
 		
 		else {
 			offlineIndex++;
-			offlineFormatted.push("<tr><td class='offline'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
-			offlineFormatted.sort();
-			document.getElementById("offlineTable").innerHTML = offlineFormatted.join("");
-			/*
+			//offlineFormatted.push("<tr><td class='offline'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
+			//offlineFormatted.sort();
+			//document.getElementById("offlineTable").innerHTML = offlineFormatted.join("");
+			
 			$.ajax({
 			 type: 'GET',
-			 url: channelAPI,
+			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
 			 headers: {
 			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 			 },
 			 success: function(data) {
+				if (data.status.length > 50) {
+					var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+				}
+				else {
+					var truncatedTitle = data.status;
+				}
+				 
+				 
+				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'>" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td>" + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " followers<br />" + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " views</td></tr>");
+				
+				offlineFormatted.sort(function (a, b) {
+				return a.toLowerCase().localeCompare(b.toLowerCase());
+			});
+				document.getElementById("offlineTable").innerHTML = offlineFormatted.join("");
+				//document.getElementById("printedArray").innerHTML = offlineFormatted.join ("<br />");
 			 }
 			});
-			*/
+			
 		}
-		document.getElementById("onlineIndex").textContent = onlineIndex + " online channels";
-		document.getElementById("offlineIndex").textContent = offlineIndex + " offline channels";
+		if (onlineIndex == 1) {
+			document.getElementById("onlineIndex").textContent = onlineIndex + " online channel";
+		}
+		else {
+			document.getElementById("onlineIndex").textContent = onlineIndex + " online channels";
+		}
+		if (offlineIndex == 1) {
+			document.getElementById("offlineIndex").textContent = offlineIndex + " offline channel";
+		}
+		else {
+			document.getElementById("offlineIndex").textContent = offlineIndex + " offline channels";
+		}
+		
 		
 		if (onlineIndex < 1) {
-			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td></tr>";
+			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
 		}
+		
 	 }
 	});
 }

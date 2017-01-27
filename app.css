@@ -1,10 +1,19 @@
 body {
-	margin: 20px;
+	height: 100%;
+	width: 99%;
+}
+h3 {
+	text-align: center;
 }
 table {
 	border-collapse: separate;
 	margin: 15px;
-	width: 600px;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+}
+td {
+	font-size: 0.9em !important;
 }
 tbody {
 	border: 1px solid black;
@@ -14,10 +23,18 @@ tbody.headerBody th {
 	border: none !important;
 }
 td:first-of-type {
-	width: 45%;
+	width: 25%;
+}
+td:nth-of-type(2) {
+	font-size: 0.8em !important;
+}
+td:last-of-type {
+	width: 25%;
+	font-size: 0.8em !important;
+	padding: 0px;
 }
 tbody#onlineTable {
-	background-color: rgba(0, 255, 0, 0.6);
+	background-color: rgba(0, 180, 0, 0.6);
 }
 tbody tr:first-of-type td:first-of-type {
 	border-radius: 5px 0px 0px 0px;
@@ -35,8 +52,14 @@ tbody tr:last-of-type td:first-of-type {
 tbody tr:last-of-type td:last-of-type {
 	border-radius: 0px 0px 5px 0px;
 }
+tbody tr:only-of-type td:first-of-type {
+	border-radius: 5px 0px 0px 5px !important;
+}
+tbody tr:only-of-type td:last-of-type {
+	border-radius: 0px 5px 5px 0px !important;
+}
 table td, table th {
-	padding: 15px;
+	padding: 10px;
 	text-align: center;
 	border-left: 1px solid grey;
 	border-top: 1px solid grey;
@@ -56,7 +79,20 @@ tr.noChannels td:last-of-type {
 	border-radius: 0px 5px 5px 0px !important;
 }
 a {
+	display: block;
 	color: white;
+	width: 100%;
+	height: 100%;
+}
+a:hover {
+	color: white;
+	text-decoration: none;
+}
+tbody#onlineTable td:first-of-type:hover {
+	background-color: rgba(0, 180, 0, 0.3);
+}
+tbody#offlineTable td:first-of-type:hover {
+	background-color: rgba(255, 0, 0, 0.1);
 }
 .online {
 	color: black !important;
