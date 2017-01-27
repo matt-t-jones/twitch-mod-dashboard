@@ -1,5 +1,6 @@
 var username;
 var channelLimit;
+var apiUrl;
 var onlineIndex = 0;
 var offlineIndex = 0;
 var onlineFormatted = [];
@@ -9,33 +10,36 @@ window.onload = function() {
 	
 	document.getElementById("maxChannels").value = channelLimit;
 	
-	//user param
-	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
-		var urlUser = getAllUrlParams().u;
-		document.getElementById("userInput").value = urlUser;
-		fetchMods(urlUser);
-		document.getElementById("goButton").disabled = true;
-		setTimeout(function() {
-			document.getElementById("goButton").disabled = false;
-		}, 1000);
-	}
-	if (getAllUrlParams().u == undefined) {
-		window.location.href = "?u=";
-	}
+	
 	
 	//limit param
 	
 	if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
 		channelLimit = 100;
 		document.getElementById("maxChannels").value = 100;
-		document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
 	}
 	else {
 		channelLimit = getAllUrlParams().limit;
 		document.getElementById("maxChannels").value = channelLimit
-		document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
+	}
+	apiUrl = channelLimit;
+	
+	//user param
+	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
+		var urlUser = getAllUrlParams().u;
+		document.getElementById("userInput").value = urlUser;
+		fetchMods(urlUser);
+	}
+	if (getAllUrlParams().u == undefined) {
+		window.location.href = "?u=";
+	}
+	if (getAllUrlParams().u == "") {
+		document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
+		document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
 	}
 	
+	
+
 }
 
 function newLimit() {
@@ -188,7 +192,6 @@ function getTwitchData(tUser, i) {
 	 }
 	});
 }
-
 
 function insertParam(key, value)
 {
