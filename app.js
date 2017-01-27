@@ -1,5 +1,15 @@
+var username;
+var channelLimit;
+var onlineIndex = 0;
+var offlineIndex = 0;
+var onlineFormatted = [];
+var offlineFormatted = [];
+
 window.onload = function() {
 	
+	document.getElementById("maxChannels").value = channelLimit;
+	
+	//user param
 	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
 		var urlUser = getAllUrlParams().u;
 		document.getElementById("userInput").value = urlUser;
@@ -9,24 +19,38 @@ window.onload = function() {
 			document.getElementById("goButton").disabled = false;
 		}, 1000);
 	}
+	if (getAllUrlParams().u == undefined) {
+		window.location.href = "?u=";
+	}
 	
-	document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
+	//limit param
+	
+	if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
+		channelLimit = 100;
+		document.getElementById("maxChannels").value = 100;
+		document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
+	}
+	else {
+		channelLimit = getAllUrlParams().limit;
+		document.getElementById("maxChannels").value = channelLimit
+		document.getElementById("thisIs").textContent = $("#maxChannels option:selected").text();
+	}
 	
 }
 
-var username;
-var onlineIndex = 0;
-var offlineIndex = 0;
-var onlineFormatted = [];
-var offlineFormatted = [];
+function newLimit() {
+	var pendingLimit = $("#maxChannels option:selected").text();
+	insertParam("limit", pendingLimit);
+}
+
 function buttonAction() {
 	username = document.getElementById("userInput").value;
-	window.location.href = "?u=" + username;
+	insertParam("u", username);
 }
 
 function fetchMods(user) {
 	$.ajax({
-		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user,
+		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=" + channelLimit,
 		success: function (data) {
 			console.log(data);
 			
@@ -80,8 +104,13 @@ function getTwitchData(tUser, i) {
 			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 			 },
 			 success: function(data) {
-				if (data.status.length > 50) {
-					var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+				if (data.status) {
+					if (data.status.length > 50) {
+						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+					}
+					else {
+						var truncatedTitle = data.status;
+					}
 				}
 				else {
 					var truncatedTitle = data.status;
@@ -113,8 +142,14 @@ function getTwitchData(tUser, i) {
 			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 			 },
 			 success: function(data) {
-				if (data.status.length > 50) {
-					var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+				 
+				if (data.status) {
+					if (data.status.length > 50) {
+						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+					}
+					else {
+						var truncatedTitle = data.status;
+					}
 				}
 				else {
 					var truncatedTitle = data.status;
@@ -154,6 +189,30 @@ function getTwitchData(tUser, i) {
 	});
 }
 
+
+function insertParam(key, value)
+{
+    key = encodeURI(key); value = encodeURI(value);
+
+    var kvp = document.location.search.substr(1).split('&');
+
+    var i=kvp.length; var x; while(i--) 
+    {
+        x = kvp[i].split('=');
+
+        if (x[0]==key)
+        {
+            x[1] = value;
+            kvp[i] = x.join('=');
+            break;
+        }
+    }
+
+    if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+
+    //this will reload the page, it's likely better to store this until finished
+    document.location.search = kvp.join('&'); 
+}
 
 function getAllUrlParams(url) {
 
