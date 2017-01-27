@@ -22,7 +22,6 @@ window.onload = function() {
 		channelLimit = getAllUrlParams().limit;
 		document.getElementById("maxChannels").value = channelLimit
 	}
-	apiUrl = channelLimit;
 	
 	//user param
 	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
@@ -30,10 +29,7 @@ window.onload = function() {
 		document.getElementById("userInput").value = urlUser;
 		fetchMods(urlUser);
 	}
-	if (getAllUrlParams().u == undefined) {
-		window.location.href = "?u=";
-	}
-	if (getAllUrlParams().u == "") {
+	if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
 		document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
 		document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
 	}
@@ -249,8 +245,8 @@ function getAllUrlParams(url) {
 	  var paramValue = typeof(a[1])==='undefined' ? true : a[1];
 
 	  // (optional) keep case consistent
-	  paramName = paramName.toLowerCase();
-	  paramValue = paramValue.toLowerCase();
+	  //paramName = paramName.toLowerCase();
+	  //paramValue = paramValue.toLowerCase();
 
 	  // if parameter name already exists
 	  if (obj[paramName]) {
