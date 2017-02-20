@@ -2,6 +2,8 @@ body {
 	height: 100%;
 	width: 99%;
 	padding-top: 20px;
+    color: rgba(255, 255, 255, 0.8) !important;
+    background-color: rgb(60, 60, 60) !important;
 }
 h3 {
 	text-align: center;
@@ -55,7 +57,7 @@ td:last-of-type {
 	padding: 0px;
 }
 tbody#onlineTable {
-	background-color: rgba(0, 180, 0, 0.6);
+	background-color: rgba(10, 125, 10, 0.6);
 }
 tbody tr:first-of-type td:first-of-type {
 	border-radius: 5px 0px 0px 0px;
@@ -64,7 +66,7 @@ tbody tr:first-of-type td:last-of-type {
 	border-radius: 0px 5px 0px 0px;
 }
 tbody#offlineTable {
-	background-color: rgba(255, 0, 0, 0.6);
+	background-color: rgba(200, 0, 0, 0.6);
 	margin-top: 5px;
 }
 tbody tr:last-of-type td:first-of-type {
@@ -110,10 +112,10 @@ a:hover {
 	text-decoration: none;
 }
 tbody#onlineTable td:first-of-type:hover {
-	background-color: rgba(0, 180, 0, 0.3);
+	background-color: rgba(10, 125, 10, 0.3);
 }
 tbody#offlineTable td:first-of-type:hover {
-	background-color: rgba(255, 0, 0, 0.1);
+	background-color: rgba(200, 0, 0, 0.3);
 }
 .online {
 	color: black !important;

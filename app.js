@@ -5,35 +5,44 @@ var onlineIndex = 0;
 var offlineIndex = 0;
 var onlineFormatted = [];
 var offlineFormatted = [];
+var windowOnload;
+var stopTimer;
 
-window.onload = function() {
-	
-	document.getElementById("maxChannels").value = channelLimit;
-	
-	
-	
-	//limit param
-	
-	if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
-		channelLimit = 100;
-		document.getElementById("maxChannels").value = 100;
-	}
-	else {
-		channelLimit = getAllUrlParams().limit;
-		document.getElementById("maxChannels").value = channelLimit
-	}
-	
-	//user param
-	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
-		var urlUser = getAllUrlParams().u;
-		document.getElementById("userInput").value = urlUser;
-		fetchMods(urlUser);
-	}
-	if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
-		document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
-		document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
-	}
-	
+window.onload = function () {
+    autoRefresh();
+
+    windowOnload = function() {
+
+        document.getElementById("maxChannels").value = channelLimit;
+
+
+
+        //limit param
+
+        if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
+            channelLimit = 100;
+            document.getElementById("maxChannels").value = 100;
+        }
+        else {
+            channelLimit = getAllUrlParams().limit;
+            document.getElementById("maxChannels").value = channelLimit
+        }
+
+        //user param
+        if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
+            var urlUser = getAllUrlParams().u;
+            document.getElementById("userInput").value = urlUser;
+            document.title = "Mod Dashboard - " + urlUser;
+            fetchMods(urlUser);
+        }
+        if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
+            document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
+            document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
+            stopTimer = 1;
+        }
+
+    }
+    windowOnload();
 	
 
 }
@@ -48,6 +57,27 @@ function buttonAction() {
 	insertParam("u", username);
 }
 
+function autoRefresh() {
+
+    var count = 60;
+    var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+    function timer() {
+        if (stopTimer != 1) {
+            count = count - 1;
+            if (count <= 0) {
+                clearInterval(counter);
+                onlineIndex = 0;
+                offlineIndex = 0;
+                windowOnload();
+                autoRefresh();
+                return;
+            }
+
+            document.getElementById("refreshingIn").textContent = "Refreshing in " + count + " seconds";
+        }
+    }
+}
+
 function fetchMods(user) {
 	$.ajax({
 		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=" + channelLimit,
@@ -55,8 +85,8 @@ function fetchMods(user) {
 			console.log(data);
 			
 			if (data.count == 0) {
-				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
-				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
+				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
+				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
 			}
 			
 			var modList = [];
@@ -182,7 +212,7 @@ function getTwitchData(tUser, i) {
 		
 		
 		if (onlineIndex < 1) {
-			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td></td></tr>";
+			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
 		}
 		
 	 }
