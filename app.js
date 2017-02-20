@@ -39,6 +39,7 @@ window.onload = function () {
             document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
             document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
             document.getElementById("refreshingIn").style.visibility = "hidden";
+            document.getElementById("totalChannels").style.visibility = "hidden";
             stopTimer = 1;
         }
 
@@ -83,7 +84,9 @@ function fetchMods(user) {
 	$.ajax({
 		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=" + channelLimit,
 		success: function (data) {
-			console.log(data);
+		    console.log(data);
+
+		    document.getElementById("totalChannels").textContent = "This user moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels";
 			
 			if (data.count == 0) {
 				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
@@ -136,8 +139,8 @@ function getTwitchData(tUser, i) {
 			 },
 			 success: function(data) {
 				if (data.status) {
-					if (data.status.length > 50) {
-						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+					if (data.status.length > 65) {
+						var truncatedTitle = data.status.substring(0, 65) + "&hellip;";
 					}
 					else {
 						var truncatedTitle = data.status;
@@ -148,7 +151,7 @@ function getTwitchData(tUser, i) {
 				}
 				
 				 
-				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'>" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td>" + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " viewers<br />" + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " followers<br />" + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " views</td></tr>");
+				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + data.logo + "' />" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 				onlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
 			});
@@ -175,8 +178,8 @@ function getTwitchData(tUser, i) {
 			 success: function(data) {
 				 
 				if (data.status) {
-					if (data.status.length > 50) {
-						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+					if (data.status.length > 65) {
+						var truncatedTitle = data.status.substring(0, 65) + "&hellip;";
 					}
 					else {
 						var truncatedTitle = data.status;
@@ -185,9 +188,13 @@ function getTwitchData(tUser, i) {
 				else {
 					var truncatedTitle = data.status;
 				}
+				var userLogo
+				if (data.logo != null) {
+				    userLogo = data.logo;
+				}
+				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 				 
-				 
-				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'>" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td>" + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " followers<br />" + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " views</td></tr>");
+				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 				
 				offlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -220,6 +227,7 @@ function getTwitchData(tUser, i) {
 	});
 }
 
+// not my code vvv
 function insertParam(key, value)
 {
     key = encodeURI(key); value = encodeURI(value);
@@ -244,6 +252,8 @@ function insertParam(key, value)
     document.location.search = kvp.join('&'); 
 }
 
+
+// not my code vvv
 function getAllUrlParams(url) {
 
   // get query string from url (optional) or window
