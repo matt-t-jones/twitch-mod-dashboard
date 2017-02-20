@@ -139,8 +139,8 @@ function getTwitchData(tUser, i) {
 			 },
 			 success: function(data) {
 				if (data.status) {
-					if (data.status.length > 65) {
-						var truncatedTitle = data.status.substring(0, 65) + "&hellip;";
+					if (data.status.length > 50) {
+						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
 					}
 					else {
 						var truncatedTitle = data.status;
@@ -178,8 +178,8 @@ function getTwitchData(tUser, i) {
 			 success: function(data) {
 				 
 				if (data.status) {
-					if (data.status.length > 65) {
-						var truncatedTitle = data.status.substring(0, 65) + "&hellip;";
+					if (data.status.length > 50) {
+						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
 					}
 					else {
 						var truncatedTitle = data.status;
