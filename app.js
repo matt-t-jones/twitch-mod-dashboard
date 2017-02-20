@@ -38,6 +38,7 @@ window.onload = function () {
         if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
             document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
             document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
+            document.getElementById("refreshingIn").style.visibility = "hidden";
             stopTimer = 1;
         }
 
