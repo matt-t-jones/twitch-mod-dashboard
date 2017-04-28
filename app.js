@@ -41,6 +41,10 @@ window.onload = function () {
             document.getElementById("totalChannels").style.visibility = "hidden";
 			document.getElementsByTagName("hr")[0].style.visibility = "hidden";
 			document.getElementsByTagName("hr")[1].style.visibility = "hidden";
+			document.getElementById("maxChannels").style.display = "none";
+			document.getElementById("maxChannelsSpan").style.display = "none";
+			document.getElementById("maxExceed").style.display = "none";
+			document.getElementById("autoRefreshSpan").style.display = "none";
 			
             stopTimer = 1;
         }
