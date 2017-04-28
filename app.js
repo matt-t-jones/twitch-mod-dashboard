@@ -16,7 +16,6 @@ window.onload = function () {
         document.getElementById("maxChannels").value = channelLimit;
 
 
-
         //limit param
 
         if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
@@ -40,6 +39,9 @@ window.onload = function () {
             document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
             document.getElementById("refreshingIn").style.visibility = "hidden";
             document.getElementById("totalChannels").style.visibility = "hidden";
+			document.getElementsByTagName("hr")[0].style.visibility = "hidden";
+			document.getElementsByTagName("hr")[1].style.visibility = "hidden";
+			
             stopTimer = 1;
         }
 
@@ -64,7 +66,7 @@ function autoRefresh() {
     var count = 60;
     var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
     function timer() {
-        if (stopTimer != 1) {
+        if (stopTimer != 1 && document.getElementById("autoRefresh").checked) {
             count = count - 1;
             if (count <= 0) {
                 clearInterval(counter);
@@ -77,6 +79,11 @@ function autoRefresh() {
 
             document.getElementById("refreshingIn").textContent = "Refreshing in " + count + " seconds";
         }
+		else {
+			document.getElementById("refreshingIn").textContent = "";
+			count = 60;
+		}
+		
     }
 }
 
@@ -85,12 +92,22 @@ function fetchMods(user) {
 		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=" + channelLimit,
 		success: function (data) {
 		    console.log(data);
-
-		    document.getElementById("totalChannels").textContent = "This user moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels";
+		    document.getElementById("totalChannels").innerHTML = data.user + " moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels"
+			+ "<br />Displaying " + data.channels.length + " of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			
+			if (data.count > 500) {
+				document.getElementById("maxExceed").style.display = "block";
+				document.getElementById("refreshingIn").textContent = "";
+				document.getElementById("autoRefresh").checked = false;
+				document.getElementById("autoRefresh").disabled = true;
+			}
+			else {
+				document.getElementById("maxExceed").style.display = "none";
+			}
 			
 			if (data.count == 0) {
-				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
-				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
+				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
+				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
 			}
 			
 			var modList = [];
@@ -105,13 +122,13 @@ function fetchMods(user) {
 				document.getElementById("offlineTable").innerHTML = "";
 				onlineFormatted = [];
 				offlineFormatted = [];	
-				getTwitchData(modList[index], index);				
+				getTwitchData(modList[index]);				
 			}
 			
 		},
 		});
 }
-function getTwitchData(tUser, i) {
+function getTwitchData(tUser) {
 	$.ajax({
 	 type: 'GET',
 	 url: 'https://api.twitch.tv/kraken/streams/' + tUser,
@@ -150,8 +167,13 @@ function getTwitchData(tUser, i) {
 					var truncatedTitle = data.status;
 				}
 				
+				var fullTitle = data.status;
+				
+				var userLogo;
+				if (data.logo != null) userLogo = data.logo;
+				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 				 
-				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + data.logo + "' />" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 				onlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
 			});
@@ -188,13 +210,16 @@ function getTwitchData(tUser, i) {
 				else {
 					var truncatedTitle = data.status;
 				}
+				
+				var fullTitle = data.status;
+				
 				var userLogo
 				if (data.logo != null) {
 				    userLogo = data.logo;
 				}
 				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 				 
-				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td>" + truncatedTitle + "<br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 				
 				offlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -220,9 +245,12 @@ function getTwitchData(tUser, i) {
 		
 		
 		if (onlineIndex < 1) {
-			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td>Error</td><td>no channels found for this user.</td><td>-</td></tr>";
+			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
 		}
 		
+		if (offlineIndex < 1) {
+			document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
+		}
 	 }
 	});
 }
