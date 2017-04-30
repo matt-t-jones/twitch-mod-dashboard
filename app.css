@@ -4,6 +4,7 @@ body {
 	padding-top: 20px;
     color: rgba(255, 255, 255, 0.8) !important;
     background-color: rgb(40, 40, 40) !important;
+	font-family: sans-serif;
 }
 img {
     display: inline;
@@ -75,6 +76,11 @@ tbody {
 select.form-control {
 	display: inline;
 	width: 75px;
+	height: 2em;
+	background-color: #202020;
+	border: 1px solid grey;
+	color: white;
+	vertical-align: middle !important;
 }
 input[type=text].form-control {
 	display: inline;
@@ -151,6 +157,20 @@ a {
     line-height: 30px;
     vertical-align: middle !important;
 }
+.center a {
+	display: inline !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: 1em !important;
+	vertical-align: middle !important;
+}
+.center a:hover {
+	text-decoration: underline !important;
+}
+.hideMe {
+	display: none !important;
+}
+
 a:hover {
 	color: white;
 	text-decoration: none;

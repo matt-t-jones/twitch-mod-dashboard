@@ -65,26 +65,45 @@ function buttonAction() {
 	insertParam("u", username);
 }
 
-function autoRefresh() {
+function convertToURL(text) {
+	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+}
 
+var refreshingIn = document.getElementById("refreshingIn");
+
+$('#autoRefresh').on('change', disableRefresh);
+
+function disableRefresh() {
+	document.getElementById("refreshingIn").innerHTML = "&nbsp;";
+	count = 60;
+}
+
+function autoRefresh() {
     var count = 60;
     var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
     function timer() {
         if (stopTimer != 1 && document.getElementById("autoRefresh").checked) {
             count = count - 1;
+			if(count <= 5) {
+				refreshingIn.style.color = "red";
+				refreshingIn.style.fontWeight = "bold";
+			}
             if (count <= 0) {
                 clearInterval(counter);
                 onlineIndex = 0;
                 offlineIndex = 0;
                 windowOnload();
                 autoRefresh();
+				refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
+				refreshingIn.style.fontWeight = "normal";
                 return;
             }
 
-            document.getElementById("refreshingIn").textContent = "Refreshing in " + count + " seconds";
+			refreshingIn.textContent = "Refreshing in " + count + " seconds";
         }
 		else {
-			document.getElementById("refreshingIn").textContent = "";
+			refreshingIn.innerHTML = "&nbsp;";
 			count = 60;
 		}
 		
@@ -98,15 +117,11 @@ function fetchMods(user) {
 		    console.log(data);
 		    document.getElementById("totalChannels").innerHTML = data.user + " moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels"
 			+ "<br />Displaying " + data.channels.length + " of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-			
 			if (data.count > 500) {
-				document.getElementById("maxExceed").style.display = "block";
+				document.getElementById("maxExceed").classList.remove("hideMe");
 				document.getElementById("refreshingIn").textContent = "";
 				document.getElementById("autoRefresh").checked = false;
 				document.getElementById("autoRefresh").disabled = true;
-			}
-			else {
-				document.getElementById("maxExceed").style.display = "none";
 			}
 			
 			if (data.count == 0) {
@@ -147,11 +162,7 @@ function getTwitchData(tUser) {
 		if (data.stream != null) {
 			onlineIndex++;
 			var viewersCount = data.stream.viewers;
-			//onlineFormatted.push("<tr><td class='online'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
-			//onlineFormatted.sort();
-			//document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
-			
-			
+
 			$.ajax({
 			 type: 'GET',
 			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
@@ -171,7 +182,7 @@ function getTwitchData(tUser) {
 					var truncatedTitle = data.status;
 				}
 				
-				var fullTitle = data.status;
+				var fullTitle = convertToURL(data.status);
 				
 				var userLogo;
 				if (data.logo != null) userLogo = data.logo;
@@ -191,9 +202,6 @@ function getTwitchData(tUser) {
 		
 		else {
 			offlineIndex++;
-			//offlineFormatted.push("<tr><td class='offline'>" + tUser + "</td><td><a href='https://www.twitch.tv/" + tUser + "'>twitch.tv/" + tUser + "</a></td></tr>");
-			//offlineFormatted.sort();
-			//document.getElementById("offlineTable").innerHTML = offlineFormatted.join("");
 			
 			$.ajax({
 			 type: 'GET',
@@ -215,7 +223,7 @@ function getTwitchData(tUser) {
 					var truncatedTitle = data.status;
 				}
 				
-				var fullTitle = data.status;
+				var fullTitle = convertToURL(data.status);
 				
 				var userLogo
 				if (data.logo != null) {
