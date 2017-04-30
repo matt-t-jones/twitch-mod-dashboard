@@ -77,6 +77,8 @@ $('#autoRefresh').on('change', disableRefresh);
 function disableRefresh() {
 	document.getElementById("refreshingIn").innerHTML = "&nbsp;";
 	count = 60;
+	refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
+	refreshingIn.style.fontWeight = "normal";
 }
 
 function autoRefresh() {
@@ -105,6 +107,8 @@ function autoRefresh() {
 		else {
 			refreshingIn.innerHTML = "&nbsp;";
 			count = 60;
+			refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
+			refreshingIn.style.fontWeight = "normal";
 		}
 		
     }
