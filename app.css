@@ -20,7 +20,7 @@ body {
 	right: 0;
 	background-color: white;
 	z-index: 10;
-	background: url(loader.svg) no-repeat fixed center, rgb(40, 40, 40);
+	background: url(loader.svg?mar30) no-repeat fixed center, rgb(40, 40, 40);
 	background-repeat: no-repeat;
 	background-position: center;
 }
