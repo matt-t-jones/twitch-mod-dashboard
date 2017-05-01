@@ -9,6 +9,19 @@ var windowOnload;
 var stopTimer;
 
 window.onload = function () {
+	
+	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
+		setTimeout(function() {
+			$('#loader').fadeOut(500);
+		}, 1000);
+	}
+	else {
+		setTimeout(function() {
+			$('#loader').fadeOut(500);
+		}, 200);
+	}
+	
+	
     autoRefresh();
 
     windowOnload = function() {
@@ -95,10 +108,22 @@ function autoRefresh() {
                 clearInterval(counter);
                 onlineIndex = 0;
                 offlineIndex = 0;
-                windowOnload();
+				
+				$('#body-wrapper').fadeOut(500);
+				
+				$('#loader').fadeIn(200);
+				
+				setTimeout(windowOnload, 1000);
+				
+				setTimeout(function() {
+					$('#loader').fadeOut(200);
+					$('#body-wrapper').fadeIn(500);
+				}, 2000);
+				
                 autoRefresh();
 				refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
 				refreshingIn.style.fontWeight = "normal";
+				refreshingIn.innerHTML = "&nbsp;";
                 return;
             }
 
