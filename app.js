@@ -37,7 +37,7 @@ window.onload = function () {
         }
         else {
             channelLimit = getAllUrlParams().limit;
-            document.getElementById("maxChannels").value = channelLimit
+            document.getElementById("maxChannels").value = channelLimit;
         }
 
         //user param
@@ -58,6 +58,8 @@ window.onload = function () {
 			document.getElementById("maxChannelsSpan").style.display = "none";
 			document.getElementById("maxExceed").style.display = "none";
 			document.getElementById("autoRefreshSpan").style.display = "none";
+			document.getElementById("refreshInterval").style.display = "none";
+			document.getElementById("refreshIntervalSpan").style.display = "none";
 			
             stopTimer = 1;
         }
@@ -94,8 +96,17 @@ function disableRefresh() {
 	refreshingIn.style.fontWeight = "normal";
 }
 
+var count;
+
+function restartTimer() {
+	if (document.getElementById('refreshInterval').value == 1) count = 60;
+	else if (document.getElementById('refreshInterval').value == 5) count = 300;
+	else if (document.getElementById('refreshInterval').value == 10) count = 600;
+	else count = 60;
+}
+
 function autoRefresh() {
-    var count = 60;
+	restartTimer();
     var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
     function timer() {
         if (stopTimer != 1 && document.getElementById("autoRefresh").checked) {
@@ -126,8 +137,25 @@ function autoRefresh() {
 				refreshingIn.innerHTML = "&nbsp;";
                 return;
             }
+			
+			if (count < 60) {
+				refreshingIn.textContent = "Refreshing in " + count + " seconds";
+			}
+			else {
+			
+				function pad(num) {
+					var s = num+"";
+					while (s.length < 2) s = "0" + s;
+					return s;
+				}
+			
+				var totalSeconds = count;
+				var seconds = totalSeconds % 60;
+				var minutes = Math.floor(totalSeconds / 60);
+				var time = minutes + ":" + pad(seconds);
 
-			refreshingIn.textContent = "Refreshing in " + count + " seconds";
+				refreshingIn.textContent = "Refreshing in " + time;
+			}
         }
 		else {
 			refreshingIn.innerHTML = "&nbsp;";

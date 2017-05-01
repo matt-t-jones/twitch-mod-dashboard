@@ -20,7 +20,7 @@ body {
 	right: 0;
 	background-color: white;
 	z-index: 10;
-	background: url(loader.svg?mar30) no-repeat fixed center, rgb(40, 40, 40);
+	background: url(loader.svg) no-repeat fixed center, rgb(40, 40, 40);
 	background-repeat: no-repeat;
 	background-position: center;
 }
@@ -99,6 +99,9 @@ select.form-control {
 	border: 1px solid grey;
 	color: white;
 	vertical-align: middle !important;
+}
+select#refreshInterval {
+	width: 65px !important;
 }
 input[type=text].form-control {
 	display: inline;
