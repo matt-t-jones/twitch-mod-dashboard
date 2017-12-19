@@ -9,7 +9,7 @@ var windowOnload;
 var stopTimer;
 
 window.onload = function () {
-	
+
 	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
 		setTimeout(function() {
 			$('#loader').fadeOut(500);
@@ -20,8 +20,8 @@ window.onload = function () {
 			$('#loader').fadeOut(500);
 		}, 200);
 	}
-	
-	
+
+
     autoRefresh();
 
     windowOnload = function() {
@@ -60,13 +60,13 @@ window.onload = function () {
 			document.getElementById("autoRefreshSpan").style.display = "none";
 			document.getElementById("refreshInterval").style.display = "none";
 			document.getElementById("refreshIntervalSpan").style.display = "none";
-			
+
             stopTimer = 1;
         }
 
     }
     windowOnload();
-	
+
 
 }
 
@@ -82,7 +82,7 @@ function buttonAction() {
 
 function convertToURL(text) {
 	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-	return text.replace(exp,"<a href='$1' target='_blank'>$1</a>"); 
+	return text.replace(exp,"<a href='$1' target='_blank'>$1</a>");
 }
 
 var refreshingIn = document.getElementById("refreshingIn");
@@ -94,6 +94,7 @@ function disableRefresh() {
 	count = 60;
 	refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
 	refreshingIn.style.fontWeight = "normal";
+	document.getElementById("refreshInterval").disabled = !document.getElementById("refreshInterval").disabled;
 }
 
 var count;
@@ -119,36 +120,36 @@ function autoRefresh() {
                 clearInterval(counter);
                 onlineIndex = 0;
                 offlineIndex = 0;
-				
+
 				$('#body-wrapper').fadeOut(500);
-				
+
 				$('#loader').fadeIn(200);
-				
+
 				setTimeout(windowOnload, 1000);
-				
+
 				setTimeout(function() {
 					$('#loader').fadeOut(200);
 					$('#body-wrapper').fadeIn(500);
 				}, 2000);
-				
+
                 autoRefresh();
 				refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
 				refreshingIn.style.fontWeight = "normal";
 				refreshingIn.innerHTML = "&nbsp;";
                 return;
             }
-			
+
 			if (count < 60) {
 				refreshingIn.textContent = "Refreshing in " + count + " seconds";
 			}
 			else {
-			
+
 				function pad(num) {
 					var s = num+"";
 					while (s.length < 2) s = "0" + s;
 					return s;
 				}
-			
+
 				var totalSeconds = count;
 				var seconds = totalSeconds % 60;
 				var minutes = Math.floor(totalSeconds / 60);
@@ -163,7 +164,7 @@ function autoRefresh() {
 			refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
 			refreshingIn.style.fontWeight = "normal";
 		}
-		
+
     }
 }
 
@@ -180,30 +181,31 @@ function fetchMods(user) {
 				document.getElementById("autoRefresh").checked = false;
 				document.getElementById("autoRefresh").disabled = true;
 			}
-			
+
 			if (data.count == 0) {
 				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
 				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
 			}
-			
+
 			var modList = [];
-			
+
 			for(var index = 0;  index < data.channels.length; index++) {
 				modList[modList.length] = data.channels[index].name;
 			}
 			sortedModList = modList.sort();
-			
+
 			for(var index=0; index < modList.length; index++) {
 				document.getElementById("onlineTable").innerHTML = "";
 				document.getElementById("offlineTable").innerHTML = "";
 				onlineFormatted = [];
-				offlineFormatted = [];	
-				getTwitchData(modList[index]);				
+				offlineFormatted = [];
+				getTwitchData(modList[index]);
 			}
-			
+
 		},
 		});
 }
+
 function getTwitchData(tUser) {
 	$.ajax({
 	 type: 'GET',
@@ -212,10 +214,10 @@ function getTwitchData(tUser) {
 	   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 	 },
 	 success: function(data) {
-		
+
 		console.log(data);
 		var channelAPI = data._links.channel;
-		
+
 		if (data.stream != null) {
 			onlineIndex++;
 			var viewersCount = data.stream.viewers;
@@ -238,13 +240,13 @@ function getTwitchData(tUser) {
 				else {
 					var truncatedTitle = data.status;
 				}
-				
+
 				var fullTitle = convertToURL(data.status);
-				
+
 				var userLogo;
 				if (data.logo != null) userLogo = data.logo;
 				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
-				 
+
 				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 				onlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -252,14 +254,14 @@ function getTwitchData(tUser) {
 				document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
 			 }
 			});
-			
-			
+
+
 		}
-		
-		
+
+
 		else {
 			offlineIndex++;
-			
+
 			$.ajax({
 			 type: 'GET',
 			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
@@ -267,7 +269,7 @@ function getTwitchData(tUser) {
 			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 			 },
 			 success: function(data) {
-				 
+
 				if (data.status) {
 					if (data.status.length > 50) {
 						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
@@ -279,17 +281,17 @@ function getTwitchData(tUser) {
 				else {
 					var truncatedTitle = data.status;
 				}
-				
+
 				var fullTitle = convertToURL(data.status);
-				
+
 				var userLogo
 				if (data.logo != null) {
 				    userLogo = data.logo;
 				}
 				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
-				 
+
 				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
-				
+
 				offlineFormatted.sort(function (a, b) {
 				return a.toLowerCase().localeCompare(b.toLowerCase());
 			});
@@ -297,7 +299,7 @@ function getTwitchData(tUser) {
 				//document.getElementById("printedArray").innerHTML = offlineFormatted.join ("<br />");
 			 }
 			});
-			
+
 		}
 		if (onlineIndex == 1) {
 			document.getElementById("onlineIndex").textContent = onlineIndex + " online channel";
@@ -311,12 +313,12 @@ function getTwitchData(tUser) {
 		else {
 			document.getElementById("offlineIndex").textContent = offlineIndex + " offline channels";
 		}
-		
-		
+
+
 		if (onlineIndex < 1) {
 			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
 		}
-		
+
 		if (offlineIndex < 1) {
 			document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
 		}
@@ -331,7 +333,7 @@ function insertParam(key, value)
 
     var kvp = document.location.search.substr(1).split('&');
 
-    var i=kvp.length; var x; while(i--) 
+    var i=kvp.length; var x; while(i--)
     {
         x = kvp[i].split('=');
 
@@ -346,7 +348,7 @@ function insertParam(key, value)
     if(i<0) {kvp[kvp.length] = [key,value].join('=');}
 
     //this will reload the page, it's likely better to store this until finished
-    document.location.search = kvp.join('&'); 
+    document.location.search = kvp.join('&');
 }
 
 

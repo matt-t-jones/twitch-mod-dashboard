@@ -27,14 +27,14 @@
 			</select>
 			<br />
 			<br />
-			<span id="refreshIntervalSpan">Refresh Interval (min):</span>
-			<select id="refreshInterval" class="form-control" onchange="restartTimer()">
-				<option value="1">1</option>
-				<option value="5">5</option>
-				<option value="10">10</option>
-			</select>
-            <p style="margin-top:20px; margin-bottom: -10px;">
+      <p style="margin-top:20px; margin-bottom: -10px;">
 				<span id="autoRefreshSpan"><input id="autoRefresh" type="checkbox" style="vertical-align: top" checked="checked" /> Enable auto refresh</span><br />
+				<span id="refreshIntervalSpan">Refresh Interval (min):</span>
+				<select id="refreshInterval" class="form-control" onchange="restartTimer()">
+					<option value="1">1</option>
+					<option value="5">5</option>
+					<option value="10">10</option>
+				</select><br />
 				<span id="refreshingIn">Refreshing in 60 seconds</span>
 			</p>
 			<p id="maxExceed" class="hideMe" style="color: red; text-align: center; margin-top: 1em;"><i class="fa fa-exclamation-triangle"></i> This user moderates more than 500 channels. Channels will display up to the limit and auto refresh is disabled.</p>
@@ -85,7 +85,7 @@
             <a href="https://api.twitch.tv">api.twitch.tv &copy; Twitch</a>
             <a href="https://twitchstuff.3v.fi/modlookup/">twitchstuff.3v.fi/modlookup &copy; 3v.fi</a>
         </footer>
-		<script src="app.js?may1" type="text/javascript"></script>
+		<script src="app.js?d=12-19-2017-0" type="text/javascript"></script>
 		</div>
 	</body>
 </html>
