@@ -5,4 +5,4 @@ Current pages:
 * [Followage Tool](https://twitch.mattjones.one/followage)
 * [Moderator Dashboard](https://twitch.mattjones.one/mod-dashboard)
 
-The moderator dashboard builds upon this API: [https://twitchstuff.3v.fi/modlookup/](https://twitchstuff.3v.fi/modlookup/)
+The moderator dashboard builds upon this API: https://twitchstuff.3v.fi/modlookup/
