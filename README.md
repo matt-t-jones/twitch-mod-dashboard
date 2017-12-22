@@ -1,10 +1,6 @@
 # Twitch Mod Dashboard
-https://twitch.mattjones.one
+https://twitchmod.mattjones.one
 
-This project is intended to improve the experience of Twitch users and moderators.
+This project is intended to be a helpful tool for Twitch users to manage and keep track of the channels they moderate.
 
-Current pages:
-* [Followage Tool](https://mattjones.one/followage)
-* [Moderator Dashboard](https://twitch.mattjones.one/mod-dashboard)
-
-The moderator dashboard builds upon this API: https://twitchstuff.3v.fi/modlookup/
+Builds upon https://twitchstuff.3v.fi/modlookup/
