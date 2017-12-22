@@ -1,4 +1,4 @@
-# Twitch Mod Dashboard
+# Twitch Tools Repository
 https://twitch.mattjones.one
 
 This project is intended to improve the experience of Twitch users and moderators.
