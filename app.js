@@ -1,103 +1,90 @@
-var username;
-var channelLimit;
-var apiUrl;
+/*
+	Twitch Mod Dashboard
+	app.js
+	Copyright (C) Matt Jones - All Rights Reserved
+*/
+
+// global vars
+var username, channelLimit, apiUrl, windowOnload, stopTimer, count;
 var onlineIndex = 0;
 var offlineIndex = 0;
 var onlineFormatted = [];
 var offlineFormatted = [];
-var windowOnload;
-var stopTimer;
 
+// stuff that loads with page
 window.onload = function () {
+if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
+	setTimeout(function() {
+		$('#loader').fadeOut(500);
+	}, 1000);
+}
+else {
+	setTimeout(function() {
+		$('#loader').fadeOut(500);
+	}, 200);
+}
+autoRefresh();
 
-	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
-		setTimeout(function() {
-			$('#loader').fadeOut(500);
-		}, 1000);
+// stuff that loads with page, and whenever called
+windowOnload = function() {
+	$("#maxChannels").val(channelLimit);
+
+	//limit param
+	if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
+		channelLimit = 100;
+		$("#maxChannels").val(100);
 	}
 	else {
-		setTimeout(function() {
-			$('#loader').fadeOut(500);
-		}, 200);
+		channelLimit = getAllUrlParams().limit;
+		$("#maxChannels").val(channelLimit);
 	}
 
-
-    autoRefresh();
-
-    windowOnload = function() {
-
-        document.getElementById("maxChannels").value = channelLimit;
-
-
-        //limit param
-
-        if (getAllUrlParams().limit != 250 && getAllUrlParams().limit != 500) {
-            channelLimit = 100;
-            document.getElementById("maxChannels").value = 100;
-        }
-        else {
-            channelLimit = getAllUrlParams().limit;
-            document.getElementById("maxChannels").value = channelLimit;
-        }
-
-        //user param
-        if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
-            var urlUser = getAllUrlParams().u;
-            document.getElementById("userInput").value = urlUser;
-            document.title = "Mod Dashboard - " + urlUser;
-            fetchMods(urlUser);
-        }
-        if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
-            document.getElementsByClassName("headerBody")[0].style.visibility = "hidden";
-            document.getElementsByClassName("headerBody")[1].style.visibility = "hidden";
-            document.getElementById("refreshingIn").style.visibility = "hidden";
-            document.getElementById("totalChannels").style.visibility = "hidden";
-			document.getElementsByTagName("hr")[0].style.visibility = "hidden";
-			document.getElementsByTagName("hr")[1].style.visibility = "hidden";
-			document.getElementById("maxChannels").style.display = "none";
-			document.getElementById("maxChannelsSpan").style.display = "none";
-			document.getElementById("maxExceed").style.display = "none";
-			document.getElementById("autoRefreshSpan").style.display = "none";
-			document.getElementById("refreshInterval").style.display = "none";
-			document.getElementById("refreshIntervalSpan").style.display = "none";
-
-            stopTimer = 1;
-        }
-
-    }
-    windowOnload();
-
-
+	//user param
+	if (getAllUrlParams().u != undefined && getAllUrlParams().u != "") {
+		var urlUser = getAllUrlParams().u;
+		$("#userInput").val(urlUser);
+		document.title = "Mod Dashboard - " + urlUser;
+		fetchMods(urlUser);
+	}
+	if (getAllUrlParams().u == "" || getAllUrlParams().u == undefined) {
+		// set visibility and display parameters to display nothing on default
+		$(".default-h").css("visibility", "hidden");
+		$(".default-n").css("display", "none");
+		stopTimer = 1;
+	}
+} // end windowOnload
+windowOnload();
 }
 
+// inserts new limit into URL (effectively reloads page)
 function newLimit() {
 	var pendingLimit = $("#maxChannels option:selected").text();
 	insertParam("limit", pendingLimit);
 }
 
+// inserts name from textbox into url (effectively reloads page)
 function buttonAction() {
-	username = document.getElementById("userInput").value;
+	username = $("#userInput").val();
 	insertParam("u", username);
 }
 
+// function that converts text in stream titles to clickable URLs
+// may throw error if no URL found in title string
 function convertToURL(text) {
 	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
 	return text.replace(exp,"<a href='$1' target='_blank'>$1</a>");
 }
 
-var refreshingIn = document.getElementById("refreshingIn");
-
+// disable/enable auto refresh when checkbox is changed
 $('#autoRefresh').on('change', disableRefresh);
 
 function disableRefresh() {
-	document.getElementById("refreshingIn").innerHTML = "&nbsp;";
 	count = 60;
-	refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
-	refreshingIn.style.fontWeight = "normal";
-	document.getElementById("refreshInterval").disabled = !document.getElementById("refreshInterval").disabled;
+	$("#refreshingIn").html("&nbsp;");
+	$("#refreshingIn").css("color", "rgba(255, 255, 255, 0.8)");
+	$("#refreshingIn").css("font-weight", "normal");
+	$("#refreshInterval").prop("disabled", !$("#refreshInterval").prop("disabled"));
 }
-
-var count;
 
 function restartTimer() {
 	if (document.getElementById('refreshInterval').value == 1) count = 60;
@@ -108,42 +95,38 @@ function restartTimer() {
 
 function autoRefresh() {
 	restartTimer();
-    var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
-    function timer() {
-        if (stopTimer != 1 && document.getElementById("autoRefresh").checked) {
-            count = count - 1;
+	var counter = setInterval(timer, 1000); //1000 will  run it every 1 second
+	function timer() {
+		if (stopTimer != 1 && document.getElementById("autoRefresh").checked) {
+			count = count - 1;
 			if(count <= 5) {
-				refreshingIn.style.color = "red";
-				refreshingIn.style.fontWeight = "bold";
+				$("#refreshingIn").css("color", "red");
+				$("#refreshingIn").css("font-weight", "bold");
 			}
-            if (count <= 0) {
-                clearInterval(counter);
-                onlineIndex = 0;
-                offlineIndex = 0;
-
+			if (count <= 0) {
+				clearInterval(counter);
+				onlineIndex = 0;
+				offlineIndex = 0;
 				$('#body-wrapper').fadeOut(500);
-
 				$('#loader').fadeIn(200);
-
 				setTimeout(windowOnload, 1000);
-
 				setTimeout(function() {
 					$('#loader').fadeOut(200);
 					$('#body-wrapper').fadeIn(500);
 				}, 2000);
 
-                autoRefresh();
-				refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
-				refreshingIn.style.fontWeight = "normal";
-				refreshingIn.innerHTML = "&nbsp;";
-                return;
-            }
+				autoRefresh();
+				$("#refreshingIn").css("color", "rgba(255, 255, 255, 0.8)");
+				$("#refreshingIn").css("font-weight", "normal");
+				$("#refreshingIn").html("&nbsp;");
+				return;
+			}
 
 			if (count < 60) {
-				refreshingIn.textContent = "Refreshing in " + count + " seconds";
+				$("#refreshingIn").text("Refreshing in " + count + " seconds");
 			}
 			else {
-
+				// pad time with leading zero
 				function pad(num) {
 					var s = num+"";
 					while (s.length < 2) s = "0" + s;
@@ -155,36 +138,40 @@ function autoRefresh() {
 				var minutes = Math.floor(totalSeconds / 60);
 				var time = minutes + ":" + pad(seconds);
 
-				refreshingIn.textContent = "Refreshing in " + time;
+				$("#refreshingIn").text("Refreshing in " + time);
 			}
-        }
+		}
 		else {
-			refreshingIn.innerHTML = "&nbsp;";
 			count = 60;
-			refreshingIn.style.color = "rgba(255, 255, 255, 0.8)";
-			refreshingIn.style.fontWeight = "normal";
+			$("#refreshingIn").html("&nbsp;");
+			$("#refreshingIn").css("color", "rgba(255, 255, 255, 0.8)");
+			$("#refreshingIn").css("font-weight", "normal");
 		}
 
-    }
+	}
 }
 
 function fetchMods(user) {
 	$.ajax({
 		url: "https://twitchstuff.3v.fi/modlookup/api/user/" + user + "?limit=" + channelLimit,
 		success: function (data) {
-		    console.log(data);
-		    document.getElementById("totalChannels").innerHTML = data.user + " moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels"
-			+ "<br />Displaying " + data.channels.length + " of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+			console.log(data);
+			// set "total channels" html
+			$("#totalChannels").html(data.user + " moderates a total of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " channels"
+			+ "<br />Displaying " + data.channels.length + " of " + data.count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+			// if more than 500 channels, disable auto refresh & display warning
 			if (data.count > 500) {
-				document.getElementById("maxExceed").classList.remove("hideMe");
-				document.getElementById("refreshingIn").textContent = "";
-				document.getElementById("autoRefresh").checked = false;
-				document.getElementById("autoRefresh").disabled = true;
+				$("#maxExceed").removeClass("hideMe");
+				$("#refreshingIn").text("");
+				$("#autoRefresh").prop("checked", false);
+				$("#autoRefresh").prop("disabled", true);
 			}
 
+			// show placeholders if no channels
 			if (data.count == 0) {
-				document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
-				document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>";
+				$("#onlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>");
+				$("#offlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>no channels found for this user.</td><td>-</td></tr>");
 			}
 
 			var modList = [];
@@ -195,150 +182,138 @@ function fetchMods(user) {
 			sortedModList = modList.sort();
 
 			for(var index=0; index < modList.length; index++) {
-				document.getElementById("onlineTable").innerHTML = "";
-				document.getElementById("offlineTable").innerHTML = "";
+				$("#onlineTable").html("");
+				$("#offlineTable").html("");
 				onlineFormatted = [];
 				offlineFormatted = [];
 				getTwitchData(modList[index]);
 			}
-
-		},
-		});
+		} // end success
+	}); // end ajax
 }
 
 function getTwitchData(tUser) {
 	$.ajax({
-	 type: 'GET',
-	 url: 'https://api.twitch.tv/kraken/streams/' + tUser,
-	 headers: {
-	   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
-	 },
-	 success: function(data) {
+		type: 'GET',
+		url: 'https://api.twitch.tv/kraken/streams/' + tUser,
+		headers: {
+		'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
+		},
+		success: function(data) {
 
-		console.log(data);
-		var channelAPI = data._links.channel;
+			console.log(data);
+			var channelAPI = data._links.channel;
 
-		if (data.stream != null) {
-			onlineIndex++;
-			var viewersCount = data.stream.viewers;
+			if (data.stream != null) {
+				onlineIndex++;
+				var viewersCount = data.stream.viewers;
 
-			$.ajax({
-			 type: 'GET',
-			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
-			 headers: {
-			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
-			 },
-			 success: function(data) {
-				if (data.status) {
-					if (data.status.length > 50) {
-						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
-					}
-					else {
-						var truncatedTitle = data.status;
-					}
-				}
-				else {
-					var truncatedTitle = data.status;
-				}
+				$.ajax({
+					type: 'GET',
+					url: "https://api.twitch.tv/kraken/channels/" + tUser,
+					headers: {
+					'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
+					},
+					success: function(data) {
+						if (data.status) {
+							// truncate title if more than 50 chars
+							if (data.status.length > 50) {
+								var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+							}
+							else {
+								var truncatedTitle = data.status;
+							}
+						}
+						else {
+							var truncatedTitle = data.status;
+						}
 
-				var fullTitle = convertToURL(data.status);
+						var fullTitle = convertToURL(data.status);
+						var userLogo;
+						if (data.logo != null) userLogo = data.logo;
+						else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 
-				var userLogo;
-				if (data.logo != null) userLogo = data.logo;
-				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
-
-				onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
-				onlineFormatted.sort(function (a, b) {
-				return a.toLowerCase().localeCompare(b.toLowerCase());
-			});
-				document.getElementById("onlineTable").innerHTML = onlineFormatted.join("");
-			 }
-			});
-
-
-		}
+						onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+						onlineFormatted.sort(function (a, b) {
+							return a.toLowerCase().localeCompare(b.toLowerCase());
+						});
+						$("#onlineTable").html(onlineFormatted.join(""));
+					} // end success
+				}); // end ajax
+			} // end "if (data.stream != null)"
 
 
-		else {
-			offlineIndex++;
+			else {
+				offlineIndex++;
 
-			$.ajax({
-			 type: 'GET',
-			 url: "https://api.twitch.tv/kraken/channels/" + tUser,
-			 headers: {
-			   'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
-			 },
-			 success: function(data) {
+				$.ajax({
+					type: 'GET',
+					url: "https://api.twitch.tv/kraken/channels/" + tUser,
+					headers: {
+					'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
+					},
+					success: function(data) {
+						if (data.status) {
+							if (data.status.length > 50) {
+								var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+							}
+							else {
+								var truncatedTitle = data.status;
+							}
+						}
+						else {
+							var truncatedTitle = data.status;
+						}
 
-				if (data.status) {
-					if (data.status.length > 50) {
-						var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
-					}
-					else {
-						var truncatedTitle = data.status;
-					}
-				}
-				else {
-					var truncatedTitle = data.status;
-				}
+						var fullTitle = convertToURL(data.status);
 
-				var fullTitle = convertToURL(data.status);
+						var userLogo
+						if (data.logo != null) {
+							userLogo = data.logo;
+						}
+						else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 
-				var userLogo
-				if (data.logo != null) {
-				    userLogo = data.logo;
-				}
-				else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
+						offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 
-				offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+						offlineFormatted.sort(function (a, b) {
+							return a.toLowerCase().localeCompare(b.toLowerCase());
+						});
+						$("#offlineTable").html( offlineFormatted.join(""));
+					} // end success
+				}); // end ajax
+			} // end else
 
-				offlineFormatted.sort(function (a, b) {
-				return a.toLowerCase().localeCompare(b.toLowerCase());
-			});
-				document.getElementById("offlineTable").innerHTML = offlineFormatted.join("");
-				//document.getElementById("printedArray").innerHTML = offlineFormatted.join ("<br />");
-			 }
-			});
-
-		}
-		if (onlineIndex == 1) {
-			document.getElementById("onlineIndex").textContent = onlineIndex + " online channel";
-		}
-		else {
-			document.getElementById("onlineIndex").textContent = onlineIndex + " online channels";
-		}
-		if (offlineIndex == 1) {
-			document.getElementById("offlineIndex").textContent = offlineIndex + " offline channel";
-		}
-		else {
-			document.getElementById("offlineIndex").textContent = offlineIndex + " offline channels";
-		}
-
-
-		if (onlineIndex < 1) {
-			document.getElementById("onlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
-		}
-
-		if (offlineIndex < 1) {
-			document.getElementById("offlineTable").innerHTML = "<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>";
-		}
-	 }
-	});
+			if (onlineIndex == 1) {
+				$("#onlineIndex").text(onlineIndex + " online channel");
+			}
+			else {
+				$("#onlineIndex").text(onlineIndex + " online channels");
+			}
+			if (offlineIndex == 1) {
+				$("#offlineIndex").text(offlineIndex + " offline channel");
+			}
+			else {
+				$("#offlineIndex").text(offlineIndex + " offline channels");
+			}
+			if (onlineIndex < 1) {
+				$("#onlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
+			}
+			if (offlineIndex < 1) {
+				$("#offlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
+			}
+		} // end success
+	}); // end ajax
 }
 
-// not my code vvv
-function insertParam(key, value)
-{
+function insertParam(key, value) {
     key = encodeURI(key); value = encodeURI(value);
 
     var kvp = document.location.search.substr(1).split('&');
 
-    var i=kvp.length; var x; while(i--)
-    {
+    var i=kvp.length; var x; while(i--) {
         x = kvp[i].split('=');
 
-        if (x[0]==key)
-        {
+        if (x[0]==key) {
             x[1] = value;
             kvp[i] = x.join('=');
             break;
@@ -351,8 +326,6 @@ function insertParam(key, value)
     document.location.search = kvp.join('&');
 }
 
-
-// not my code vvv
 function getAllUrlParams(url) {
 
   // get query string from url (optional) or window
