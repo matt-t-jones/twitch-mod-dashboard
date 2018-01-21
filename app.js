@@ -195,114 +195,89 @@ function fetchMods(user) {
 function getTwitchData(tUser) {
 	$.ajax({
 		type: 'GET',
-		url: 'https://api.twitch.tv/kraken/streams/' + tUser,
+		url: "https://api.twitch.tv/kraken/channels/" + tUser,
 		headers: {
 		'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
 		},
 		success: function(data) {
+			var channelName = data.display_name;
+			var channelStatus = data.status;
+			var channelFollowers = data.followers;
+			var channelViews = data.views;
+			var channelGame = data.game;
+			if (data.status) {
+				// truncate title if more than 50 chars
+				if (data.status.length > 50) {
+					var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
+				}
+				else {
+					var truncatedTitle = data.status;
+				}
+			}
+			else {
+				var truncatedTitle = data.status;
+			}
+			var fullTitle = convertToURL(data.status);
+			var userLogo;
+			if (data.logo != null) userLogo = data.logo;
+			else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
 
-			console.log(data);
-			var channelAPI = data._links.channel;
+			$.ajax({
+				type: 'GET',
+				url: 'https://api.twitch.tv/kraken/streams/' + tUser,
+				headers: {
+				'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
+				},
+				success: function(data) {
+					console.log(data);
+					var channelAPI = data._links.channel;
+					// if ONLINE
+					if (data.stream != null) {
+						var viewersCount = data.stream.viewers;
 
-			if (data.stream != null) {
-				onlineIndex++;
-				var viewersCount = data.stream.viewers;
+						onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + channelName + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + channelGame + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + channelFollowers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + channelViews.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+						onlineIndex++
 
-				$.ajax({
-					type: 'GET',
-					url: "https://api.twitch.tv/kraken/channels/" + tUser,
-					headers: {
-					'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
-					},
-					success: function(data) {
-						if (data.status) {
-							// truncate title if more than 50 chars
-							if (data.status.length > 50) {
-								var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
-							}
-							else {
-								var truncatedTitle = data.status;
-							}
-						}
-						else {
-							var truncatedTitle = data.status;
-						}
-
-						var fullTitle = convertToURL(data.status);
-						var userLogo;
-						if (data.logo != null) userLogo = data.logo;
-						else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
-
-						onlineFormatted.push("<tr><td class='online'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-user'></i> " + viewersCount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
 						onlineFormatted.sort(function (a, b) {
 							return a.toLowerCase().localeCompare(b.toLowerCase());
 						});
 						$("#onlineTable").html(onlineFormatted.join(""));
-					} // end success
-				}); // end ajax
-			} // end "if (data.stream != null)"
+					} // end if ONLINE
 
-
-			else {
-				offlineIndex++;
-
-				$.ajax({
-					type: 'GET',
-					url: "https://api.twitch.tv/kraken/channels/" + tUser,
-					headers: {
-					'Client-ID': 'j87ocv1auj3pu0hiwjy2l43qalr4rh'
-					},
-					success: function(data) {
-						if (data.status) {
-							if (data.status.length > 50) {
-								var truncatedTitle = data.status.substring(0, 50) + "&hellip;";
-							}
-							else {
-								var truncatedTitle = data.status;
-							}
-						}
-						else {
-							var truncatedTitle = data.status;
-						}
-
-						var fullTitle = convertToURL(data.status);
-
-						var userLogo
-						if (data.logo != null) {
-							userLogo = data.logo;
-						}
-						else userLogo = "https://static-cdn.jtvnw.net/jtv_user_pictures/xarth/404_user_70x70.png";
-
-						offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + data.display_name + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + data.game + "</td><td><i class='fa fa-heart'></i> " + data.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + data.views.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+					// else OFFLINE
+					else {
+						offlineFormatted.push("<tr><td class='offline'>" + "<a href='https://www.twitch.tv/" + tUser + "' target='_blank'><img src='" + userLogo + "' />" + channelName + "</a></td><td class='center'><span class='truncatedTitle'>" + truncatedTitle + "</span><span class='fullTitle'>" + fullTitle + "</span><br /><strong>Game: </strong>" + channelGame + "</td><td><i class='fa fa-heart'></i> " + channelFollowers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br /><i class='fa fa-eye'></i> " + channelViews.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "</td></tr>");
+						offlineIndex++;
 
 						offlineFormatted.sort(function (a, b) {
 							return a.toLowerCase().localeCompare(b.toLowerCase());
 						});
 						$("#offlineTable").html( offlineFormatted.join(""));
-					} // end success
-				}); // end ajax
-			} // end else
+					} // end else OFFLINE
 
-			if (onlineIndex == 1) {
-				$("#onlineIndex").text(onlineIndex + " online channel");
-			}
-			else {
-				$("#onlineIndex").text(onlineIndex + " online channels");
-			}
-			if (offlineIndex == 1) {
-				$("#offlineIndex").text(offlineIndex + " offline channel");
-			}
-			else {
-				$("#offlineIndex").text(offlineIndex + " offline channels");
-			}
-			if (onlineIndex < 1) {
-				$("#onlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
-			}
-			if (offlineIndex < 1) {
-				$("#offlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
-			}
+					if (onlineIndex == 1) {
+						$("#onlineIndex").text(onlineIndex + " online channel");
+					}
+					else {
+						$("#onlineIndex").text(onlineIndex + " online channels");
+					}
+					if (offlineIndex == 1) {
+						$("#offlineIndex").text(offlineIndex + " offline channel");
+					}
+					else {
+						$("#offlineIndex").text(offlineIndex + " offline channels");
+					}
+					if (onlineIndex < 1) {
+						$("#onlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
+					}
+					if (offlineIndex < 1) {
+						$("#offlineTable").html("<tr class='noChannels'><td class='empty'>-</td><td>-</td><td>-</td></tr>");
+					}
+				} // end success
+			}); // end ajax
 		} // end success
 	}); // end ajax
+
 }
 
 function insertParam(key, value) {
