@@ -87,6 +87,8 @@ function disableRefresh() {
 }
 
 function restartTimer() {
+	$("#refreshingIn").css("color", "rgba(255, 255, 255, 0.8)");
+	$("#refreshingIn").css("font-weight", "normal");
 	if (document.getElementById('refreshInterval').value == 1) count = 60;
 	else if (document.getElementById('refreshInterval').value == 5) count = 300;
 	else if (document.getElementById('refreshInterval').value == 10) count = 600;
